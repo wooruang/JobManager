@@ -6,6 +6,7 @@ class BaseJob:
     name: str
     description: str
     all_stage: List[str]
+    job_type: str = 'DefaultJob'
 
     def create(self, context, condition, from_job=None):
         pass

@@ -7,7 +7,7 @@ from job_manager.job.base_job import BaseJob
 LOGGER = logging.getLogger(__name__)
 
 
-class DynamicJobLoader:
+class BaseJobLoader:
     BASE_JOB_TYPE = BaseJob
 
     def load_job_list(self):
@@ -73,7 +73,8 @@ class DynamicJobLoader:
             job_instance = self._load_job_module(data['category'], data['name'])
             context = data['context'] if 'context' in data else None
             from_job = data['from_job'] if 'from_job' in data else None
-            job = job_instance.create(context, data['condition'], from_job)
+            reply_to = data['reply_to'] if 'reply_to' in data else None
+            job = job_instance.create(context, data['condition'], from_job, reply_to)
         except Exception as e:
             LOGGER.error('Error %s', e, exc_info=True)
         return job
