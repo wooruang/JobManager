@@ -121,13 +121,18 @@ class FtpConnector(SingletonInstance):
             bio.seek(0)
 
             self.ftp_ctx.storbinary(f'STOR {path}', bio)
-            return path
         except error_perm as e:
+            self.login(self.host, self.username, self.password)
             return None
+        return path
 
     def load(self, path):
-        bio = io.BytesIO()
-        self.ftp_ctx.retrbinary(f'RETR {path}', bio.write)
+        try:
+            bio = io.BytesIO()
+            self.ftp_ctx.retrbinary(f'RETR {path}', bio.write)
+        except error_perm as e:
+            self.login(self.host, self.username, self.password)
+            return None
         return bio
 
     def makedir(self, path, recursive=True):

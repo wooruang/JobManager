@@ -40,7 +40,7 @@ class BlobManager(SingletonInstance):
         path = f'{job_id}/{job_task_id}/{filename}'
         self.store_by_path(store_location, path, blob_bytes)
 
-    def store_by_path(self, store_location, path, blob_bytes):
+    def store_by_path(self, store_location, path, blob_bytes, retry=1):
         """
         Store bytes.
 
@@ -51,38 +51,49 @@ class BlobManager(SingletonInstance):
         path
         blob_bytes
             데이터
+        retry
+
         Returns
         -------
 
         """
         if store_location == 'ftp' and self.ftp_blob is not None:
-            return self._store_ftp(path, blob_bytes)
+            return self._store_ftp(path, blob_bytes, retry)
         elif self.ftp_blob is None:
             raise ValueError('Not initialized ftp!')
         else:
             raise ValueError(f'Not Supported!', store_location)
 
-    def _store_ftp(self, path, blob_bytes):
-        return self.ftp_blob.store(path, blob_bytes)
+    def _store_ftp(self, path, blob_bytes, retry=1):
+        ret = self.ftp_blob.store(path, blob_bytes)
+        while ret is None and retry > 0:
+            ret = self.ftp_blob.store(path, blob_bytes)
+            retry -= 1
+        return ret
 
-    def load_by_path(self, store_location, path):
+    def load_by_path(self, store_location, path, retry=1):
         """
 
         Parameters
         ----------
         store_location
         path
+        retry
 
         Returns
         -------
 
         """
         if store_location == 'ftp' and self.ftp_blob is not None:
-            return self._load_ftp(path)
+            return self._load_ftp(path, retry)
         elif self.ftp_blob is None:
             raise ValueError('Not initialized ftp!')
         else:
             raise ValueError(f'Not Supported!', store_location)
 
-    def _load_ftp(self, path):
-        return self.ftp_blob.load(path)
+    def _load_ftp(self, path, retry=1):
+        ret = self.ftp_blob.load(path)
+        while ret is None and retry > 0:
+            ret = self.ftp_blob.load(path)
+            retry -= 1
+        return ret
