@@ -122,6 +122,7 @@ class FtpConnector(SingletonInstance):
 
             self.ftp_ctx.storbinary(f'STOR {path}', bio)
         except error_perm as e:
+            self.ftp_ctx.close()
             self.login(self.host, self.username, self.password)
             return None
         return path
@@ -131,6 +132,7 @@ class FtpConnector(SingletonInstance):
             bio = io.BytesIO()
             self.ftp_ctx.retrbinary(f'RETR {path}', bio.write)
         except error_perm as e:
+            self.ftp_ctx.close()
             self.login(self.host, self.username, self.password)
             return None
         return bio
@@ -174,7 +176,7 @@ if __name__ == '__main__':
     print(FtpConnector.instance().makedir('/SAVEZONE/ai_work_job/test2'))
     print(FtpConnector.instance().makedir('/SAVEZONE/ai_work_job/test2/t1/t2/t3/t4'))
     print(FtpConnector.instance().store('/SAVEZONE/ai_work_job/t/t.jpg', data))
-    print(FtpConnector.instance().load('/SAVEZONE/ai_work_job/t/t.jpg').getbuffer().nbytes)
+    print(FtpConnector.instance().load('/SAVEZONE/ai_work_job/ai_jobs/SegToClassificationJob/20230727/885b4d60-5139-4cd9-b484-d3b35d414fd9.jpg').getbuffer().nbytes)
 
 
 

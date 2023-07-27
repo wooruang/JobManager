@@ -40,7 +40,8 @@ class BlockingRpcClientQueue(BaseBlockingPublishQueue):
 
     def check_queue_and_reconnect(self):
         if self.channel.is_closed or self.connection.is_closed:
-            self.connect_queue()
+            self.reconnect_queue()
+            self._connect_queue_impl()
 
     def request(self, routing_key, data, timeout=5):
         self.check_queue_and_reconnect()
