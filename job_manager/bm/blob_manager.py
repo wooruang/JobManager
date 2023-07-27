@@ -1,5 +1,6 @@
 import uuid
 
+from job_manager.bm.blobs.filesystem_blob import FileSystemBlob
 from job_manager.bm.blobs.ftp_blob import FtpBlob
 from job_manager.singleton import SingletonInstance
 
@@ -8,9 +9,13 @@ class BlobManager(SingletonInstance):
 
     def __init__(self):
         self.ftp_blob = None
+        self.fs_blob = None
 
     def init_ftp(self, host, username, password, root_path):
         self.ftp_blob = FtpBlob(host, username, password, root_path)
+
+    def init_local(self, root_path):
+        self.fs_blob = FileSystemBlob(root_path)
 
     def store(self, store_location, job_id, job_task_id, blob_ext, blob_bytes, filename=None):
         """
@@ -59,6 +64,8 @@ class BlobManager(SingletonInstance):
         """
         if store_location == 'ftp' and self.ftp_blob is not None:
             return self._store_ftp(path, blob_bytes, retry)
+        elif store_location == 'local' and self.fs_blob is not None:
+            return self._store_fs(path, blob_bytes)
         elif self.ftp_blob is None:
             raise ValueError('Not initialized ftp!')
         else:
@@ -69,6 +76,10 @@ class BlobManager(SingletonInstance):
         while ret is None and retry > 0:
             ret = self.ftp_blob.store(path, blob_bytes)
             retry -= 1
+        return ret
+
+    def _store_fs(self, path, blob_bytes):
+        ret = self.fs_blob.store(path, blob_bytes)
         return ret
 
     def load_by_path(self, store_location, path, retry=1):
@@ -86,6 +97,8 @@ class BlobManager(SingletonInstance):
         """
         if store_location == 'ftp' and self.ftp_blob is not None:
             return self._load_ftp(path, retry)
+        elif store_location == 'local' and self.fs_blob is not None:
+            return self._load_fs(path)
         elif self.ftp_blob is None:
             raise ValueError('Not initialized ftp!')
         else:
@@ -96,4 +109,8 @@ class BlobManager(SingletonInstance):
         while ret is None and retry > 0:
             ret = self.ftp_blob.load(path)
             retry -= 1
+        return ret
+
+    def _load_fs(self, path):
+        ret = self.fs_blob.load(path)
         return ret

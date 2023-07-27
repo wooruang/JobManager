@@ -165,8 +165,10 @@ if __name__ == '__main__':
 
     def add_item_cb(file, mode, num, owner, group, size, date, filename):
         print(file)
+
     FtpConnector.instance().login('192.168.0.87', 'wooruang', 'bogowooang')
     # FtpConnector.instance().download_to_remote_file_list(add_item_cb)
+    FtpConnector.instance().ftp_ctx.close()
     print(FtpConnector.instance().cwd('/SAVEZONE/ai_work_job'))
     print(FtpConnector.instance().get_pwd())
     FtpConnector.instance().download_to_remote_file_list(add_item_cb)
