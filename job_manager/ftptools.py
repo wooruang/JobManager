@@ -157,29 +157,3 @@ class FtpConnector(SingletonInstance):
             except error_perm as e:
                 return None
         return ret
-
-
-if __name__ == '__main__':
-    with open('/Users/bogonets/Documents/1.jpeg', 'rb') as f:
-        data = f.read()
-
-    def add_item_cb(file, mode, num, owner, group, size, date, filename):
-        print(file)
-
-    FtpConnector.instance().login('192.168.0.87', 'wooruang', 'bogowooang')
-    # FtpConnector.instance().download_to_remote_file_list(add_item_cb)
-    FtpConnector.instance().ftp_ctx.close()
-    print(FtpConnector.instance().cwd('/SAVEZONE/ai_work_job'))
-    print(FtpConnector.instance().get_pwd())
-    FtpConnector.instance().download_to_remote_file_list(add_item_cb)
-    print(FtpConnector.instance().get_file_list())
-    print(FtpConnector.instance().get_file_list('/SAVEZONE/ai_work_job/test1'))
-    print(FtpConnector.instance().cwd('/SAVEZONE/ai_work_job/test.jpg'))
-    print(FtpConnector.instance().makedir('/SAVEZONE/ai_work_job/test2'))
-    print(FtpConnector.instance().makedir('/SAVEZONE/ai_work_job/test2/t1/t2/t3/t4'))
-    print(FtpConnector.instance().store('/SAVEZONE/ai_work_job/t/t.jpg', data))
-    print(FtpConnector.instance().load('/SAVEZONE/ai_work_job/ai_jobs/SegToClassificationJob/20230727/885b4d60-5139-4cd9-b484-d3b35d414fd9.jpg').getbuffer().nbytes)
-
-
-
-
