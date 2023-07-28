@@ -19,6 +19,6 @@ class FileSystemBlob(BaseBlob):
     def load(self, path):
         dest_path = os.path.join(self.root_path, path)
         data_bytes = None
-        with open(dest_path, 'wb') as f:
+        with open(dest_path, 'rb') as f:
             data_bytes = io.BytesIO(f.read())
         return data_bytes
