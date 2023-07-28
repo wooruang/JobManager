@@ -129,11 +129,9 @@ class FtpConnector(SingletonInstance):
                 dir_path = os.path.dirname(path)
                 self.makedir(dir_path)
 
-            bio = io.BytesIO()
-            bio.write(data_bytes)
-            bio.seek(0)
+            data_bytes.seek(0)
 
-            self.ftp_ctx.storbinary(f'STOR {path}', bio)
+            self.ftp_ctx.storbinary(f'STOR {path}', data_bytes)
         except error_perm as e:
             self.reconnect()
             return None
