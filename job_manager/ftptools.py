@@ -12,13 +12,20 @@ class FtpConnector(SingletonInstance):
         self.username = ''
         self.password = ''
         self.pwd = ''
+        self.root_path = ''
         self.dir_files = {}
+        self.local_browse_rec = []
+        self.remote_browse_rec = []
 
-    def login(self, host, username, password):
+    def __del__(self):
+        self.ftp_ctx.close()
+
+    def login(self, host, username, password, root_path):
         try:
             self.host = host
             self.username = username
             self.password = password
+            self.root_path = root_path
             self.ftp_ctx = FTP(host, username, password)
             self._init_after_login()
         except Exception as msg:
@@ -26,6 +33,7 @@ class FtpConnector(SingletonInstance):
         return True, 'Success connect!'
 
     def _init_after_login(self):
+        self.cwd(self.root_path)
         self.local_browse_rec = []
         self.remote_browse_rec = []
         self.pwd = self.ftp_ctx.pwd()
@@ -36,7 +44,12 @@ class FtpConnector(SingletonInstance):
         try:
             self.ftp_ctx.voidcmd("NOOP")
         except Exception as e:
-            self.login(self.host, self.username, self.password)
+            self.reconnect()
+
+    def reconnect(self):
+        if self.ftp_ctx is None:
+            self.ftp_ctx.close()
+        self.login(self.host, self.username, self.password, self.root_path)
 
     def download_to_remote_file_list(self, add_item_cb):
         """
@@ -111,19 +124,18 @@ class FtpConnector(SingletonInstance):
             return self.ftp_ctx.nlst(path)
 
     def store(self, path, data_bytes, mkdirs=True):
-        if mkdirs:
-            dir_path = os.path.dirname(path)
-            self.makedir(dir_path)
-
         try:
+            if mkdirs:
+                dir_path = os.path.dirname(path)
+                self.makedir(dir_path)
+
             bio = io.BytesIO()
             bio.write(data_bytes)
             bio.seek(0)
 
             self.ftp_ctx.storbinary(f'STOR {path}', bio)
         except error_perm as e:
-            self.ftp_ctx.close()
-            self.login(self.host, self.username, self.password)
+            self.reconnect()
             return None
         return path
 
@@ -132,8 +144,7 @@ class FtpConnector(SingletonInstance):
             bio = io.BytesIO()
             self.ftp_ctx.retrbinary(f'RETR {path}', bio.write)
         except error_perm as e:
-            self.ftp_ctx.close()
-            self.login(self.host, self.username, self.password)
+            self.reconnect()
             return None
         return bio
 
