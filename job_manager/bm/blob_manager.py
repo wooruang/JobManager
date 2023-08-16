@@ -16,6 +16,9 @@ class BlobManager(SingletonInstance):
             self.init_ftp(host, username, password, root_path)
         elif blob_type == 'local':
             self.init_local(root_path)
+        elif blob_type == 'all':
+            self.init_ftp(host, username, password, root_path)
+            self.init_local(root_path)
         else:
             raise ValueError(f'Blob type Error! ({blob_type})')
 

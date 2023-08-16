@@ -4,8 +4,6 @@ import signal
 import json
 import uuid
 
-from job_manager.job import BaseJob
-from job_manager.logtools import initialize_logger
 from job_manager.mq.blocking.worker.blocking_worker_queue import BlockingWorkerQueue
 
 LOGGER = logging.getLogger(__name__)
@@ -33,8 +31,12 @@ class JobTaskWorker:
         signal.signal(signal.SIGINT, self.close)
         signal.signal(signal.SIGTERM, self.close)
 
+    def before_worker_consume(self, body):
+        pass
+
     def worker_consume(self, body):
         try:
+            self.before_worker_consume(body)
             json_dict = json.loads(body)
 
             manager = self.job_manager_cls()
