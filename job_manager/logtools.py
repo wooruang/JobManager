@@ -3,13 +3,13 @@ import logging
 import sys
 from functools import wraps
 
-AODT_LOGGING_LEVEL = 'INFO' if os.getenv('AODT_LOGGING_LEVEL') is None else os.getenv('AODT_LOGGING_LEVEL')
+JOB_LOGGING_LEVEL = 'INFO' if os.getenv('JOB_LOGGING_LEVEL') is None else os.getenv('JOB_LOGGING_LEVEL')
 
 
 def initialize_default_logger():
     LOG_FORMAT = ('%(levelname) -8s %(asctime)s %(name) -10s %(funcName) '
                   '-20s %(lineno) -5d: %(message)s')
-    logging.basicConfig(stream=sys.stdout, format=LOG_FORMAT, level=logging.getLevelName(AODT_LOGGING_LEVEL))
+    logging.basicConfig(stream=sys.stdout, format=LOG_FORMAT, level=logging.getLevelName(JOB_LOGGING_LEVEL))
 
 
 def initialize_logger(tag='aodt'):
