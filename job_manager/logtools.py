@@ -3,7 +3,7 @@ import logging
 import sys
 from functools import wraps
 
-AODT_LOGGING_LEVEL = 'DEBUG' if os.getenv('AODT_LOGGING_LEVEL') is None else os.getenv('AODT_LOGGING_LEVEL')
+AODT_LOGGING_LEVEL = 'INFO' if os.getenv('AODT_LOGGING_LEVEL') is None else os.getenv('AODT_LOGGING_LEVEL')
 
 
 def initialize_default_logger():
