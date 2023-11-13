@@ -10,3 +10,7 @@ class BaseBlob(abc.ABC):
     @abc.abstractmethod
     def load(self, path):
         pass
+
+    @abc.abstractmethod
+    def get_file_list(self, path):
+        pass

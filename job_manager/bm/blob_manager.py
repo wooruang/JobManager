@@ -125,3 +125,18 @@ class BlobManager(SingletonInstance):
     def _load_fs(self, path):
         ret = self.fs_blob.load(path)
         return ret
+
+    def get_file_list(self, store_location, path):
+        if store_location == 'ftp' and self.ftp_blob is not None:
+            return self._get_file_list_ftp(path)
+        elif store_location == 'local' and self.fs_blob is not None:
+            raise ValueError('Not initialized local get_file_list!')
+            # return self._get_file_list_fs(path)
+        elif self.ftp_blob is None:
+            raise ValueError('Not initialized ftp!')
+        else:
+            raise ValueError(f'Not Supported!', store_location)
+
+    def _get_file_list_ftp(self, path):
+        ret = self.ftp_blob.get_file_list(path)
+        return ret

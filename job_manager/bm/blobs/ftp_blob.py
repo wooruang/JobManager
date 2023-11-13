@@ -22,3 +22,7 @@ class FtpBlob(BaseBlob):
     def load(self, path):
         ftp_ctx = self.create_ftp()
         return ftp_ctx.load(path)
+
+    def get_file_list(self, path):
+        ftp_ctx = self.create_ftp()
+        return ftp_ctx.get_file_list(path)

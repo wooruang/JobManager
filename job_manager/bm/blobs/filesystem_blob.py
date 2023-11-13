@@ -22,3 +22,6 @@ class FileSystemBlob(BaseBlob):
         with open(dest_path, 'rb') as f:
             data_bytes = io.BytesIO(f.read())
         return data_bytes
+
+    def get_file_list(self, path):
+        pass
